@@ -39,17 +39,78 @@ public class Game {
     
     public boolean isValid(int[] pos, String sId){
         System.out.println("isVAlid?"+s.getIt(pos)+"|" + sId+"|" + active.getSId()+"|");
+
+        if(pos[0] > 3 && pos[1] > 3) System.out.println("HECK NO");;
+
         return s.isOpen(pos) && active.getSId().equals(sId);
     }
+    
+    public boolean checkWin(char player) {
+        char[][] board = s.getIt();
+        
+        // Check rows
+        for (int row = 0; row < 3; row++) {
+            if (board[row][0] == player && 
+                board[row][1] == player && 
+                board[row][2] == player) {
+                return true;
+            }
+        }
+        
+        // Check columns
+        for (int col = 0; col < 3; col++) {
+            if (board[0][col] == player && 
+                board[1][col] == player && 
+                board[2][col] == player) {
+                return true;
+            }
+        }
+        
+        // Check diagonals
+        if (board[0][0] == player && 
+            board[1][1] == player && 
+            board[2][2] == player) {
+            return true;
+        }
+        
+        if (board[0][2] == player && 
+            board[1][1] == player && 
+            board[2][0] == player) {
+            return true;
+        }
+        
+        return false;
+    }
 
-    public char play(int[] pos, String sId){
+    private Player winner = null;
+
+    public Player announceWinner(Player winningPlayer) {
+        this.winner = winningPlayer;
+        System.out.println("Player " + winningPlayer.getChar() + " has won the game!");
+        return winner;
+    }
+
+    public Player getWinner() {
+        return winner;
+    }
+
+    
+
+
+    public char play(int[] pos, String sId) {
         if(!isValid(pos, sId)) return ' ';
         turn++;
         this.s.setIt(active.getChar(), pos[0], pos[1]);
-        this.active = p.get( turn % p.size() );
-
+        
+        if (checkWin(active.getChar())) {
+            announceWinner(active);
+            return active.getChar();
+        }
+        
+        this.active = p.get(turn % p.size());
         return active.getChar();
     }
+    
 
     public Player getActive() {
         return this.active;
